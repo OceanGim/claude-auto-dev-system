@@ -1,0 +1,51 @@
+# LESSONS.md — {{PROJECT_NAME}} Mistake Patterns & Rules
+
+> Read this file before starting any coding task.
+> Add new lessons as they are discovered during development.
+
+---
+
+## Interrupt Rules
+
+1. **If you don't know, say "I don't know."** Never guess API behavior, library internals, or platform limits.
+2. **Never fabricate blame on user.** If a tool call fails and the cause is unknown, say "I don't know the cause."
+3. **Read target files before modifying.** No blind edits.
+4. **Run lint/typecheck before marking tasks complete.**
+
+---
+
+## Inherited Patterns
+
+> Known patterns from prior projects or common mistakes. Guard against these.
+
+### 1. Stale build artifacts override fresh code
+- **Symptom**: Code changes aren't reflected at runtime
+- **Rule**: If code changes aren't reflected, delete build caches first
+
+### 2. Environment not in PATH
+- **Symptom**: Wrong runtime version, missing packages
+- **Rule**: Always verify runtime versions point to project-local versions before running commands
+
+### 3. Agent Teams — don't assume agents are dead
+- Messages arrive automatically. Wait for completion/failure report.
+- Never delete team files. Never do work that agents are doing.
+
+---
+
+## Project-Specific Patterns
+
+> (Empty — add lessons as development begins)
+
+### Template: How to add a lesson
+
+```
+### N. Short title
+- **Symptom**: What went wrong
+- **Root cause**: Why it happened
+- **Rule**: What to do differently
+```
+
+---
+
+*Created: {{DATE}}*
+*Last Updated: {{DATE}}*

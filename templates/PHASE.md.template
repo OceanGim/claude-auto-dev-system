@@ -1,0 +1,55 @@
+# Phase {{N}} — {{PHASE_NAME}}
+
+## Overview
+
+| Item | Value |
+|------|-------|
+| **Goal** | {{PHASE_GOAL}} |
+| **Duration** | {{DURATION}} |
+| **Prerequisites** | {{PREREQUISITES}} |
+| **Deliverables** | {{DELIVERABLES}} |
+
+---
+
+## Progress Summary
+
+| Section | Tasks | Done | Progress |
+|---------|:-----:|:----:|:--------:|
+| 1. {{SECTION_1}} | 0 | 0 | 0% |
+| 2. {{SECTION_2}} | 0 | 0 | 0% |
+| 3. {{SECTION_3}} | 0 | 0 | 0% |
+| **Total** | **0** | **0** | **0%** |
+
+---
+
+## Section 1: {{SECTION_1}}
+
+- [ ] **Task 1.1** — {{description}}
+- [ ] **Task 1.2** — {{description}}
+- [ ] **Task 1.3** — {{description}}
+
+## Section 2: {{SECTION_2}}
+
+- [ ] **Task 2.1** — {{description}}
+- [ ] **Task 2.2** — {{description}}
+
+## Section 3: {{SECTION_3}}
+
+- [ ] **Task 3.1** — {{description}}
+- [ ] **Task 3.2** — {{description}}
+
+---
+
+## Task Status Legend
+
+| Marker | Meaning |
+|--------|---------|
+| `- [ ]` | Pending |
+| `- [x] 🔄 In Progress` | Started, actively being worked on |
+| `- [x] ✅ Completed \| Completed: YYYY-MM-DD` | Done with date |
+| `- [ ] ⛔ Blocked: reason` | Blocked by dependency or issue |
+
+---
+
+*Created: {{DATE}}*
+*Last Updated: {{DATE}}*

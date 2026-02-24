@@ -1,0 +1,71 @@
+# {{PROJECT_NAME}} — Development Roadmap
+
+## Project Metadata
+
+| Item | Value |
+|------|-------|
+| **Product** | {{PROJECT_NAME}} |
+| **Architecture** | {{ARCHITECTURE}} |
+| **Start Date** | {{DATE}} |
+| **Owner** | {{OWNER}} |
+| **Total Tasks** | 0 |
+
+---
+
+## Phase Dashboard
+
+| Phase | Goal | Duration | Tasks | Done | Progress | Status |
+|-------|------|:--------:|:-----:|:----:|:--------:|:------:|
+| [Phase 1](phases/P1_{{PHASE1_NAME}}.md) | {{PHASE1_GOAL}} | {{DURATION}} | 0 | 0 | 0% | Not Started |
+| [Phase 2](phases/P2_{{PHASE2_NAME}}.md) | {{PHASE2_GOAL}} | {{DURATION}} | 0 | 0 | 0% | Not Started |
+| [Phase 3](phases/P3_{{PHASE3_NAME}}.md) | {{PHASE3_GOAL}} | {{DURATION}} | 0 | 0 | 0% | Not Started |
+| | | **Total** | **0** | **0** | **0%** | |
+
+---
+
+## Milestones
+
+| # | Milestone | Target | Phase | Criteria |
+|:-:|-----------|:------:|:-----:|----------|
+| M1 | {{MILESTONE_1}} | Week N | P1 | {{CRITERIA}} |
+| M2 | {{MILESTONE_2}} | Week N | P2 | {{CRITERIA}} |
+| M3 | {{MILESTONE_3}} | Week N | P3 | {{CRITERIA}} |
+
+---
+
+## Current Focus
+
+> Update this section at the start of each work session.
+
+**Active Phase**: (none — ready to start Phase 1)
+**Current Task**: —
+**Blockers**: —
+
+---
+
+## Risks
+
+| Risk | Severity | Mitigation |
+|------|:--------:|------------|
+| {{RISK_1}} | High | {{MITIGATION}} |
+| {{RISK_2}} | Medium | {{MITIGATION}} |
+
+---
+
+## Architecture Decision Log
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+
+---
+
+## Work Log
+
+### {{DATE}}
+- Project initialized with auto-dev system
+
+---
+
+*Created: {{DATE}}*
+*Last Updated: {{DATE}}*
+*Author: {{OWNER}}*

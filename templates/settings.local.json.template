@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "mcp__sequential-thinking__sequentialthinking"
+    ]
+  },
+  "model": "opus",
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "{{PROJECT_NAME}} intelligent tool usage guidelines:\n\n1. Library/framework questions -> Use Context7 automatically\n2. Latest pricing/APIs -> Use WebSearch automatically\n3. Complex decisions -> Use Sequential Thinking automatically\n4. Codebase patterns -> Use Explore agent automatically\n\nUser should NEVER need to mention these tools. You decide intelligently based on question type.\n\nProject context: {{PROJECT_CONTEXT_SUMMARY}}",
+            "statusMessage": "Setting up intelligent tool routing..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/session-restore.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/intent-router.sh",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write|Edit|Bash|Glob|Grep|WebSearch|WebFetch|mcp__context7__resolve-library-id|mcp__context7__query-docs",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/research-cache-guard.sh",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch|WebSearch|mcp__context7__resolve-library-id|mcp__context7__query-docs",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/research-cache-check.sh",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/arch-guard.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/arch-docs-guard.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/arch-commit-guard.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "WebFetch|WebSearch|mcp__context7__resolve-library-id|mcp__context7__query-docs",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/research-cache-remind.sh",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/arch-post-check.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

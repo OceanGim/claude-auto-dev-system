@@ -1,0 +1,136 @@
+# {{PROJECT_NAME}}
+
+## Project Overview
+
+| Item | Value |
+|------|-------|
+| **Product** | {{PROJECT_NAME}} |
+| **Description** | {{DESCRIPTION}} |
+| **Architecture** | {{ARCHITECTURE}} |
+
+## Single Source of Truth
+
+> **Hierarchical TODO System** — Two levels:
+>
+> 1. **`docs/PROJECT_TODO.md`** (index): Phase Dashboard, Current Focus, Milestones, Work Log
+> 2. **`docs/phases/{PHASE_PREFIX}.{N}_{NAME}.md`** (detail): Granular task checkboxes, progress per section
+>
+> Session start: read BOTH the index AND the active phase file.
+> Task status: update the phase file, then update index dashboard.
+> Work logging: add entry to index Work Log.
+> All updates require user confirmation.
+
+## Tech Stack
+
+```
+{{TECH_STACK}}
+```
+
+## Communication Rules
+
+- **{{CHAT_LANGUAGE}} for chat**: All user communication in {{CHAT_LANGUAGE}}
+- **English for code**: All code, comments, documentation in English
+- **No assumptions**: Ask before implementing uncertain features
+
+## Key File Locations
+
+| Domain | Location |
+|--------|----------|
+{{KEY_PATHS}}
+
+## Auto Behaviors
+
+> These rules apply automatically in every session. No explicit trigger needed.
+
+### Task Type Detection
+
+| Signal | Task Type | Auto Action |
+|--------|-----------|-------------|
+| docs/, .plan, PRD, architecture, planning mentioned | **Planning Mode** | Run Planning Protocol |
+| source code file modifications | **Coding Mode** | Run Coding Protocol |
+| "check", "review", "look at", diff, compare | **Review Mode** | Run Review Protocol |
+| "done", "finished", "wrap up", "commit" | **Wrap Mode** | Run Wrap Protocol |
+| WebSearch, WebFetch, Context7 query-docs executed | **Research Mode** | Run Research Protocol |
+
+### Planning Protocol
+```
+1. Read `docs/PROJECT_TODO.md` Phase Dashboard -> find active phase
+2. Read active phase file `docs/phases/{prefix}` -> check task status
+3. Check consistency with existing documentation
+4. Present list of affected documents if changes are made
+5. Log planning changes in PROJECT_TODO.md Work Log
+```
+
+### Coding Protocol
+```
+1. Read LESSONS.md to recall mistake patterns (once per session, on first coding task)
+2. Read target files before modifying (no guessing)
+3. Check if related test files exist
+4. Run typecheck after modifying typed code
+5. Report changed file list and summary to user
+6. Run tests if they exist and report results
+```
+
+### Review Protocol
+```
+1. Check git diff of target files
+2. Summarize changes (what changed and why)
+3. Identify affected files/services
+4. Check for potential issues (N+1, unused variables, hardcoded values, etc.)
+5. Check test coverage
+```
+
+### Wrap Protocol
+```
+1. List all changed files
+2. git add + commit (after user confirmation)
+3. Update active phase file:
+   - Completed items: - [ ] -> - [x] + Completed: YYYY-MM-DD
+   - Update Progress Summary table
+4. Update PROJECT_TODO.md:
+   - Increment Phase Dashboard Done count
+   - Add today's work to Work Log
+5. Add new lessons to LESSONS.md if applicable
+```
+
+### Research Protocol (after any external lookup)
+```
+1. After WebSearch / WebFetch / Context7 query-docs results received:
+   - Create cache file: docs/research/{category}/{slug}.md (use TEMPLATE.md format)
+   - Categories: searches/ (WebSearch), apis/ (WebFetch), libraries/ (Context7)
+   - Update index: Add row to docs/research/00_INDEX.md
+   - If not worth caching: Add SKIP row to index with reason
+2. Hook enforcement: next tool call is BLOCKED until cache or SKIP is completed
+3. resolve-library-id is exempt (ID lookup only, no content)
+4. State auto-expires after 2 hours
+```
+
+### Git Protocol (always on commit)
+```
+1. Check changed files with git status
+2. Generate conventional commit message (feat/fix/docs/refactor/style/test/chore)
+3. Show commit message to user and get confirmation
+4. Add dated entry to Work Log section in docs/PROJECT_TODO.md (index)
+```
+
+### No Unilateral Completion
+- **Only the user decides if a task is complete.** Claude never marks tasks done on its own.
+- Changing `- [ ]` -> `- [x]` in phase files is only allowed after user says "done", "finished", "complete".
+- When you believe work is done: report "Work completed. Please confirm." and wait.
+
+## Coding Standards
+
+{{CODING_STANDARDS}}
+
+## Critical Rules
+
+### Do
+{{DO_RULES}}
+
+### Do Not
+{{DONT_RULES}}
+
+---
+
+*Last Updated: {{DATE}}*
+*Maintainer: {{MAINTAINER}}*
