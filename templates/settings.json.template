@@ -37,7 +37,9 @@
             "timeout": 3
           }
         ]
-      },
+      }
+    ],
+    "Stop": [
       {
         "matcher": "",
         "hooks": [

@@ -1,55 +1,71 @@
 #!/bin/bash
 # Task Completion Guard
-# Warns when a new prompt is submitted but there are uncommitted code changes
-# from previous work. Reminds to run /commit + /wrap before moving on.
+# Fires on Stop event (after Claude's turn ends).
+# If there are uncommitted code changes, tells Claude to ask user
+# whether to commit + update TODO.
 
 set -uo pipefail
 
 INPUT=$(cat)
-PROMPT=$(echo "$INPUT" | jq -r '.user_prompt // empty')
 
-if [[ -z "$PROMPT" ]]; then
-  exit 0
-fi
+# Read stop reason from Stop event
+STOP_REASON=$(echo "$INPUT" | jq -r '.stop_reason // empty')
 
-# Skip if user is already doing commit/wrap/done actions
-if echo "$PROMPT" | grep -qiE '^/(commit|wrap|begin)|commit|wrap|done|finished'; then
+# Only trigger on end_turn (normal completion), not on tool use or error
+if [[ "$STOP_REASON" != "end_turn" ]]; then
   exit 0
 fi
 
 cd {{PROJECT_ROOT}}
 
-# Get uncommitted changes (staged + unstaged + untracked)
+# Prevent repeated triggers — check if we already reminded this cycle
+STATE_FILE="/tmp/claude-completion-guard-reminded"
+if [[ -f "$STATE_FILE" ]]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    CREATED=$(stat -f %m "$STATE_FILE" 2>/dev/null || echo 0)
+  else
+    CREATED=$(stat -c %Y "$STATE_FILE" 2>/dev/null || echo 0)
+  fi
+  NOW=$(date +%s)
+  AGE=$(( NOW - CREATED ))
+  if [[ "$AGE" -lt 300 ]]; then
+    exit 0
+  fi
+  rm -f "$STATE_FILE"
+fi
+
+# Get uncommitted changes
 CHANGES=$(git status --porcelain 2>/dev/null || true)
 
 if [[ -z "$CHANGES" ]]; then
   exit 0
 fi
 
-# Filter out docs-only changes (docs/, LESSONS.md are non-code)
+# Filter out docs-only changes
 CODE_CHANGES=$(echo "$CHANGES" | grep -vE '^\s*\??\??\s*(docs/|LESSONS\.md)' || true)
 
 if [[ -z "$CODE_CHANGES" ]]; then
   exit 0
 fi
 
-# Count changed files
 CHANGE_COUNT=$(echo "$CODE_CHANGES" | wc -l | tr -d ' ')
 
-# Build file summary (max 8 lines)
 FILE_SUMMARY=$(echo "$CODE_CHANGES" | head -8 | sed 's/^/  /')
 if [[ "$CHANGE_COUNT" -gt 8 ]]; then
   FILE_SUMMARY="${FILE_SUMMARY}
   ... and $((CHANGE_COUNT - 8)) more files"
 fi
 
+# Mark as reminded to prevent loop
+touch "$STATE_FILE"
+
 MSG="[TASK-COMPLETION-GUARD] Uncommitted code changes detected (${CHANGE_COUNT} files).
-Before starting new work, consider running:
-  1. /commit — to commit current changes
-  2. /wrap — to update TODO + work log
+Ask the user whether to proceed with git commit + TODO update.
 
 Changed files:
-${FILE_SUMMARY}"
+${FILE_SUMMARY}
+
+Ask the user: \"Work appears complete. Shall I commit and update the TODO?\""
 
 jq -n --arg ctx "$MSG" '{ systemMessage: $ctx }'
 exit 0

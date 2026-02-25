@@ -39,8 +39,8 @@ Without this system, every Claude Code session starts from zero. With it:
 │  ├── settings.json ── Hook wiring + permissions         │
 │  ├── hooks/ ───────── 11 shell scripts                  │
 │  │   ├── SessionStart ──> session-restore.sh            │
-│  │   ├── UserPromptSubmit ─┬> intent-router.sh          │
-│  │   │                     └> task-completion-guard.sh   │
+│  │   ├── UserPromptSubmit ──> intent-router.sh          │
+│  │   ├── Stop ─────────────> task-completion-guard.sh   │
 │  │   ├── PreToolUse ──┬──> research-cache-guard.sh      │
 │  │   │                ├──> research-cache-check.sh      │
 │  │   │                ├──> arch-guard.sh                │
@@ -145,7 +145,7 @@ The core automation layer. Shell scripts that fire on Claude Code events.
 |------|-------|-------------|
 | **session-restore** | SessionStart | Scans `docs/work/` for IN PROGRESS tasks, injects context so Claude resumes where you left off |
 | **intent-router** | UserPromptSubmit | Pattern-matches your prompt against keywords, suggests relevant project docs to read first |
-| **task-completion-guard** | UserPromptSubmit | Checks for uncommitted code changes before new work starts, reminds to `/commit` + `/wrap` |
+| **task-completion-guard** | Stop | After Claude's turn ends, checks for uncommitted code changes and asks user whether to `/commit` + `/wrap` |
 | **research-cache-check** | PreToolUse | Before any WebSearch/WebFetch/Context7 call, checks if the answer is already cached locally |
 | **research-cache-guard** | PreToolUse | If a previous research result hasn't been cached yet, **blocks all other tool calls** until you cache or skip it |
 | **research-cache-remind** | PostToolUse | After any external lookup completes, creates a pending state that triggers the guard |
@@ -321,8 +321,8 @@ MIT
 │  ├── settings.json ── 훅 연결 + 권한 설정                  │
 │  ├── hooks/ ───────── 11개 셸 스크립트                     │
 │  │   ├── SessionStart ──> session-restore.sh            │
-│  │   ├── UserPromptSubmit ─┬> intent-router.sh          │
-│  │   │                     └> task-completion-guard.sh   │
+│  │   ├── UserPromptSubmit ──> intent-router.sh          │
+│  │   ├── Stop ─────────────> task-completion-guard.sh   │
 │  │   ├── PreToolUse ──┬──> research-cache-guard.sh      │
 │  │   │                ├──> research-cache-check.sh      │
 │  │   │                ├──> arch-guard.sh                │
@@ -427,7 +427,7 @@ your-project/
 |----|--------|------|
 | **session-restore** | SessionStart | `docs/work/`에서 진행 중인 태스크를 스캔하여 컨텍스트 주입 → Claude가 이전 작업을 이어서 진행 |
 | **intent-router** | UserPromptSubmit | 사용자 프롬프트를 키워드 매칭하여 관련 프로젝트 문서 추천 |
-| **task-completion-guard** | UserPromptSubmit | 새 작업 시작 전 커밋되지 않은 코드 변경사항 감지, `/commit` + `/wrap` 실행 알림 |
+| **task-completion-guard** | Stop | Claude 턴 종료 후 커밋되지 않은 코드 변경사항 감지, 사용자에게 `/commit` + `/wrap` 진행 여부 질문 |
 | **research-cache-check** | PreToolUse | WebSearch/WebFetch/Context7 호출 전, 이미 캐시된 결과가 있는지 확인 |
 | **research-cache-guard** | PreToolUse | 이전 리서치 결과가 아직 캐시되지 않았으면 다른 모든 도구 호출을 **차단** |
 | **research-cache-remind** | PostToolUse | 외부 조사 완료 후 pending 상태를 생성하여 guard 트리거 |
