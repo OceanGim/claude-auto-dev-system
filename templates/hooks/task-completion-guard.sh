@@ -3,8 +3,9 @@
 # Fires on Stop event (after Claude's turn ends).
 # Flow:
 #   1. Uncommitted code changes detected?
-#   2. Test files exist for changed code? → force test first
-#   3. Tests pass (or no tests needed)? → ask user to commit + TODO update
+#   2. Claude judges: does this change need tests?
+#      → Yes: write tests → run → pass → commit + TODO
+#      → No: commit + TODO directly
 
 set -uo pipefail
 
@@ -44,80 +45,35 @@ if [[ -z "$CODE_CHANGES" ]]; then
 fi
 
 CHANGE_COUNT=$(echo "$CODE_CHANGES" | wc -l | tr -d ' ')
-FILE_SUMMARY=$(echo "$CODE_CHANGES" | head -8 | sed 's/^/  /')
-if [[ "$CHANGE_COUNT" -gt 8 ]]; then
+FILE_SUMMARY=$(echo "$CODE_CHANGES" | head -10 | sed 's/^/  /')
+if [[ "$CHANGE_COUNT" -gt 10 ]]; then
   FILE_SUMMARY="${FILE_SUMMARY}
-  ... and $((CHANGE_COUNT - 8)) more files"
+  ... and $((CHANGE_COUNT - 10)) more files"
 fi
-
-# ── Detect if tests exist for changed files ──
-# CUSTOMIZE: adjust extensions and test file patterns for your project
-NEEDS_TEST="false"
-TEST_FILES=""
-
-CHANGED_PATHS=$(echo "$CODE_CHANGES" | sed 's/^...//' | tr -d '"')
-
-while IFS= read -r FILE_PATH; do
-  # Skip non-source files (CUSTOMIZE: add your source extensions)
-  if ! echo "$FILE_PATH" | grep -qE '\.(ts|tsx|js|jsx|py|go|rs)$'; then
-    continue
-  fi
-  # Skip test files themselves, config files
-  if echo "$FILE_PATH" | grep -qiE '\.(test|spec|e2e)\.|__tests__|\.config\.|\.d\.ts$'; then
-    continue
-  fi
-
-  DIR=$(dirname "$FILE_PATH")
-  BASE=$(basename "$FILE_PATH" | sed 's/\.[^.]*$//')
-
-  # CUSTOMIZE: add test file patterns for your project
-  for PATTERN in \
-    "${DIR}/${BASE}.test.ts" \
-    "${DIR}/${BASE}.test.tsx" \
-    "${DIR}/${BASE}.spec.ts" \
-    "${DIR}/${BASE}.spec.tsx" \
-    "${DIR}/__tests__/${BASE}.test.ts" \
-    "${DIR}/__tests__/${BASE}.test.tsx" \
-    "${DIR}/${BASE}_test.go" \
-    "${DIR}/test_${BASE}.py"; do
-    if [[ -f "$PATTERN" ]]; then
-      NEEDS_TEST="true"
-      TEST_FILES="${TEST_FILES}
-  ${PATTERN}"
-      break
-    fi
-  done
-done <<< "$CHANGED_PATHS"
 
 # ── Set cooldown ──
 touch "$STATE_FILE"
 
-# ── Build message based on test requirement ──
-if [[ "$NEEDS_TEST" == "true" ]]; then
-  UNIQUE_TESTS=$(echo "$TEST_FILES" | sort -u | grep -v '^$')
-  MSG="[TASK-COMPLETION-GUARD] Uncommitted code changes detected (${CHANGE_COUNT} files).
-Related test files found — run tests before committing.
+MSG="[TASK-COMPLETION-GUARD] Uncommitted code changes detected (${CHANGE_COUNT} files).
 
 Changed files:
 ${FILE_SUMMARY}
 
-Related tests:
-${UNIQUE_TESTS}
+Follow this sequence with the user:
 
-Proceed in this order:
-  1. Run the related tests
-  2. Verify tests pass
-  3. If passed, ask user: \"Tests passed. Shall I commit and update the TODO?\"
-  4. If failed, fix and re-run"
-else
-  MSG="[TASK-COMPLETION-GUARD] Uncommitted code changes detected (${CHANGE_COUNT} files).
-No related test files found — ready to commit.
+Step 1: Judge whether tests are needed
+  - Evaluate if the changes involve testable logic (business logic, API, state, data flow)
+  - Config, styles, docs, type declarations = no test needed
+  - If tests needed: ask user \"These changes need tests. Shall I write and run them?\"
+  - If no tests needed: go to Step 3
 
-Changed files:
-${FILE_SUMMARY}
+Step 2: Run tests (if Step 1 determined tests are needed)
+  - Write tests or run existing ones
+  - If pass → go to Step 3
+  - If fail → fix and re-run
 
-Ask the user: \"Work appears complete. Shall I commit and update the TODO?\""
-fi
+Step 3: Commit + TODO update
+  - Ask user: \"Shall I commit and update the TODO?\""
 
 jq -n --arg ctx "$MSG" '{ systemMessage: $ctx }'
 exit 0
