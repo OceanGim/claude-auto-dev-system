@@ -37,6 +37,16 @@
             "timeout": 3
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/task-completion-guard.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PreToolUse": [
