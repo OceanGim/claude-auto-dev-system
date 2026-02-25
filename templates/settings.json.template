@@ -111,6 +111,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PROJECT_ROOT}}/.claude/hooks/doc-link-guard.sh",
+            "timeout": 5
+          }
+        ]
       }
     ]
   }

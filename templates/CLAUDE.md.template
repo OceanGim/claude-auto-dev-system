@@ -93,6 +93,20 @@
 5. Add new lessons to LESSONS.md if applicable
 ```
 
+### Document Link Protocol (on doc rename/restructure/cross-reference)
+```
+1. If ADDING a cross-reference link to another doc:
+   - Add backlink entry in target doc's ## Backlinks table
+   - Add forward + backlink rows in docs/LINK_REGISTRY.md
+2. If RENAMING or MOVING a doc:
+   - Check docs/LINK_REGISTRY.md for all backlinks to that doc
+   - Update every referring document's link
+3. If DELETING a doc:
+   - Remove all references found via LINK_REGISTRY.md backlinks
+   - Remove entry from LINK_REGISTRY.md
+4. Run validation: node scripts/check-doc-links.js
+```
+
 ### Research Protocol (after any external lookup)
 ```
 1. After WebSearch / WebFetch / Context7 query-docs results received:
